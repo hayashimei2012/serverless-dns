@@ -1,5 +1,9 @@
 FROM oven/bun AS setup
 WORKDIR /bun-dir
+# Copy package.json and bun.lockb (if exists) first to leverage Docker caching
+COPY package.json bun.lockb* ./
+# Install dependencies
+RUN bun install
 COPY . .
 RUN bun build ./src/server-node.js --target node --outdir ./dist --entry-naming bun.mjs --format esm
 RUN export BLOCKLIST_DOWNLOAD_ONLY=true && node ./dist/bun.mjs
